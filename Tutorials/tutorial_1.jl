@@ -1,7 +1,7 @@
 # Bradley J. Setzler
 # JuliaEconomics.com
 # Tutorial 1: Introductory Example: Ordinary Least Squares (OLS) Estimation in Julia
-# Passed test on Julia 0.4
+# Passed test on Julia 1.1 (Giuseppe Forte edit 200619)
 
 using Pkg
 
@@ -14,6 +14,8 @@ Random.seed!(2)
 
 using Distributions
 using LinearAlgebra
+using GLM
+using DataFrames
 
 N=1000
 K=3
@@ -31,14 +33,21 @@ trueParams = [0.1,0.5,-0.3,0.]
 Y = X*trueParams + epsilon
 
 function OLSestimator(y,x)
-    estimate = inv(x'*x)*(x'*y)
+    betaols  = inv(x'*x)*(x'*y)
+
+    residual = y - x * betaols
+    sigma2c  = sum(residual.^2)/(size(x)[1] - size(x)[2])
+    vcovdiag = sqrt.(diag(sigma2c .* inv(x' * x)))
+    tvalues  = (betaols) ./ vcovdiag
+    pvalues  = 2*(1 .- cdf.(Normal(), abs.(tvalues)))
+
+    colnames = ["Estimate", "Std. Err.", "T Stat.", "P Value"]
+    estimate = convert(DataFrame, [betaols vcovdiag tvalues pvalues])
+    names!(estimate, Symbol.(colnames))
     return estimate
 end
 
 estimates = OLSestimator(Y,X)
-
-using GLM
-using DataFrames
 
 A = convert(DataFrame, [Y X[:, [2,3,4]]])
 colnames = ["y", "x1", "x2", "x3"]
