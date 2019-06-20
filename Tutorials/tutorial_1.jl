@@ -3,14 +3,22 @@
 # Tutorial 1: Introductory Example: Ordinary Least Squares (OLS) Estimation in Julia
 # Passed test on Julia 0.4
 
-srand(2)
+using Pkg
+
+Pkg.add("Distributions")
+Pkg.add("StatsBase")
+
+using Random
+
+Random.seed!(2)
 
 using Distributions
+using LinearAlgebra
 
 N=1000
 K=3
 
-genX = MvNormal(eye(K))
+genX = MvNormal(Matrix{Float64}(I, K, K))
 X = rand(genX,N)
 X = X'
 X_noconstant = X
@@ -28,4 +36,12 @@ function OLSestimator(y,x)
 end
 
 estimates = OLSestimator(Y,X)
-linreg_estimates = linreg(X_noconstant,Y)
+
+using GLM
+using DataFrames
+
+A = convert(DataFrame, [Y X[:, [2,3,4]]])
+colnames = ["y", "x1", "x2", "x3"]
+names!(A, Symbol.(colnames))
+
+GLM_estimates = lm(@formula(y ~ x1 + x2 + x3), A)
