@@ -1,4 +1,4 @@
 # JuliaEconomics
 Tutorial Scripts for JuliaEconomics.com
 
-updates [https://github.com/setzler](Brian Setzler)'s Julia econometrics tutorial to Julia 1.1; minor additions.
+updates [Brian Setzler](https://github.com/setzler)'s Julia econometrics tutorial to Julia 1.1; minor additions.
