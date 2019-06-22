@@ -3,7 +3,7 @@
 # Tutorial 2: Maximum Likelihood Estimation (MLE) in Julia: The OLS Example
 # Passed test on Julia 1.1.1 (Giuseppe Forte edit 200619)
 
-using Pkg, Distributions, Random, LinearAlgebra, Optim, ForwardDiff
+using Distributions, Random, LinearAlgebra, Optim, ForwardDiff
 
 Random.seed!(2)
 
@@ -50,8 +50,8 @@ println(MLE_NM)
 #ForwardDiff.gradient(loglike, MLE)
 vcovmat_NM = inv(ForwardDiff.hessian(loglike, MLE_NM))
 vcovmat_CG = inv(ForwardDiff.hessian(loglike, MLE_CG))
-println(vcovmat_CG)
-println(vcovmat_NM)
+# println(vcovmat_CG)
+# println(vcovmat_NM)
 
 # Asymptotically N(0,1) t-tests
 
