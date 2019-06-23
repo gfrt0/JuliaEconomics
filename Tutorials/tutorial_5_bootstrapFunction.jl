@@ -1,25 +1,22 @@
 # Bradley J. Setzler
 # JuliaEconomics.com
 # Tutorial 5: Parallel Processing in Julia: Bootstrapping the MLE
-# Passed test on Julia 0.4
+# Passed test on Julia 1.1.1 (Giuseppe Forte edit 230619)
 
-using DataFrames
-using Distributions
-using Optim
-
+using DataFrames, Distributions, Optim, CSV
 
 params0 = [.1,.2,.3,.4,.5]
-data = readtable("data.csv")
+data = CSV.read("/Users/gforte/Downloads/data.csv")
 N = size(data,1)
-Y = array(data[:Y])
-X = array(data[[:one,:X1,:X2,:X3]])
+Y = convert(Array, data[:Y])
+X = convert(Array, data[[:one,:X1,:X2,:X3]])
 
 function loglike(rho,y,x)
     beta = rho[1:4]
-    sigma2 = exp(rho[5])+eps(Float64)
+    sigma2 = exp.(rho[5])+eps(Float64)
     residual = y-x*beta
     dist = Normal(0, sigma2)
-    contributions = logpdf(dist,residual)
+    contributions = logpdf.(dist,residual)
     loglikelihood = sum(contributions)
     return -loglikelihood
 end
@@ -34,9 +31,9 @@ function bootstrapSamples(B)
 		function wrapLoglike(rho)
 			return loglike(rho,y,x)
 		end
-		samples[b,:] = optimize(wrapLoglike,params0,method=:cg).minimum
+		samples[b,:] = optimize(wrapLoglike,params0,ConjugateGradient()).minimizer
 	end
-	samples[:,5] = exp(samples[:,5])
+	samples[:,5] = exp.(samples[:,5])
     println("bye")
     return samples
 end

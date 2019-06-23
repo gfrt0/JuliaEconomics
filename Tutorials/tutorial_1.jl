@@ -12,10 +12,7 @@ using Random
 
 Random.seed!(2)
 
-using Distributions
-using LinearAlgebra
-using GLM
-using DataFrames
+using Distributions, LinearAlgebra, GLM, DataFrames
 
 N=1000
 K=3
