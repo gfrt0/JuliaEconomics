@@ -8,11 +8,9 @@ using Pkg
 Pkg.add("Distributions")
 Pkg.add("StatsBase")
 
-using Random
+using Random, Distributions, LinearAlgebra, GLM, DataFrames
 
 Random.seed!(2)
-
-using Distributions, LinearAlgebra, GLM, DataFrames
 
 N=1000
 K=3
@@ -51,3 +49,15 @@ colnames = ["y", "x1", "x2", "x3"]
 names!(A, Symbol.(colnames))
 
 GLM_estimates = lm(@formula(y ~ x1 + x2 + x3), A)
+
+# Newton - Raphson One-Step Update
+
+function NR1step(y,x, beta1s)
+    betatilde  = beta1s + inv((x' * x)/size(x)[1])*x'*(y - x * beta1s)/size(x)[1]
+
+    return betatilde
+end
+
+# As expected, the two estimators are equal up to computing error
+betaols = estimates[1]
+betanr  = NR1step(Y,X,betaols)
